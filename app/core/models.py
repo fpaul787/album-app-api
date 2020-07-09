@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin
 
+from datetime import date
+
 
 class UserManager(BaseUserManager):
 
@@ -36,15 +38,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
 
-# not necessary
-# class Artist(models.Model):
-#     """Artist Object"""
-#     name = models.CharField(max_length=255)
-
 
 class Album(models.Model):
     """Album Object"""
     name = models.CharField(max_length=400)
-    release_date = models.DateField()
+    release_date = models.DateField(default=date.today)
     artist = models.CharField(max_length=255)
     # Image Field
+    album_cover = models.ImageField(blank=True, null=True, upload_to='covers/')
+
+    def __str__(self):
+        return self.name
