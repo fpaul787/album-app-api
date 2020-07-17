@@ -46,6 +46,7 @@ class Album(models.Model):
     artist = models.CharField(max_length=255)
     # Image Field
     album_cover = models.ImageField(blank=True, null=True, upload_to='covers/')
+    cover = models.ImageField(blank=True)
 
     def __str__(self):
         return self.name
