@@ -45,8 +45,9 @@ class Album(models.Model):
     release_date = models.DateField(default=date.today)
     artist = models.CharField(max_length=255)
     # Image Field
-    album_cover = models.ImageField(blank=True, null=True, upload_to='covers/')
-    # cover = models.ImageField(blank=True)
+    # album_cover = models.ImageField(blank=True, null=True, upload_to='covers/')
+    cover = models.ImageField(blank=True, null=True, upload_to='covers/')
+    album_link = models.URLField(max_length=300, blank=True)
 
     def __str__(self):
         return self.name

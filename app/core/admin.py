@@ -24,5 +24,11 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
+class AlbumAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'release_date']
+
+    list_filter = ('release_date',)
+
+
 admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Album)
+admin.site.register(models.Album, AlbumAdmin)
