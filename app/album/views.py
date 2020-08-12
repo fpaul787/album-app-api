@@ -1,8 +1,14 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, status
+from rest_framework.generics import ListAPIView
+from rest_framework import filters
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.decorators import api_view
+
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+
 
 from core.models import Album
 
@@ -16,10 +22,36 @@ class AlbumViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'artist']
+
     def get_queryset(self):
         """Retrieve the albums"""
-        self.queryset = Album.objects.all()
-        return self.queryset
+
+        if 'search' in self.request.GET:
+            query = self.request.query_params.get('search')
+            # print(query)
+            
+
+            # weigh search by artist first and album name second
+            # search_vector = SearchVector('name', weight='B') + \
+            #                 SearchVector('artist', weight='A')
+            # search_query = SearchQuery(query)
+
+            # results = Album.objects.annotate(
+            #     rank=SearchRank(search_vector, search_query)
+            # ).filter(rank__gte=0.3).order_by('-rank')
+            # self.queryset = Album.objects.all()
+            results = Album.objects.annotate(
+                search=SearchVector('name', 'artist'),
+            ).filter(search=query)
+            self.queryset = results
+        else:
+            results = Album.objects.all()
+            self.queryset = results
+            
+        return self.queryset            
+            
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
@@ -54,3 +86,13 @@ class AlbumViewSet(viewsets.ModelViewSet):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+class AlbumYearFilter(ListAPIView):
+    serializer_class = serializers.AlbumSerializer
+
+    def get_queryset(self):
+        """Retrieve the albums"""
+        # print(self.kwargs['year'])
+        year = self.kwargs['year']
+        self.queryset = Album.objects.filter(release_date__year=year)
+        return self.queryset

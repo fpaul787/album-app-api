@@ -9,5 +9,6 @@ router.register('albums', views.AlbumViewSet)
 app_name = 'album'
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('year/<int:year>/', views.AlbumYearFilter().as_view())
 ]

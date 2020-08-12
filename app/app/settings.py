@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'core',
     'user',
     'corsheaders',
-    'storages'
+    'storages',
+    'django.contrib.postgres'
 ]
 
 MIDDLEWARE = [
